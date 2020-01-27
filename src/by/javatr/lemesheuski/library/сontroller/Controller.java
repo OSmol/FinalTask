@@ -16,6 +16,9 @@ public class Controller {
                 break;
             case "GET_BOOKS":
                 break;
+            case "LOGOUT":
+                response="&You have successfully logged out";
+                break;
             default:
                 response = "Could not found this command";
         }

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface BookService {
     List<Book> getAllBooks()throws BookServiceException;
-    boolean AddBook(String title, String author, int year, String annotation, List<String> genre) throws BookServiceException;
+    boolean addBook(String title, String author, int year, String annotation, List<String> genre) throws BookServiceException;
 }

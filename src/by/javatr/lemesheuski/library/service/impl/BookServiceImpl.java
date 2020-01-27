@@ -19,7 +19,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public boolean AddBook(String title, String author, int year, String annotation, List<String> genre) throws BookServiceException {
+    public boolean addBook(String title, String author, int year, String annotation, List<String> genre) throws BookServiceException {
         if(title!=null||author!=null||annotation!=null||!genre.isEmpty()){
             try {
                 BookDAO.addBook(title, author, year, annotation, genre);
