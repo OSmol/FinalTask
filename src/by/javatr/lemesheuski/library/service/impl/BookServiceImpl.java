@@ -26,6 +26,7 @@ public class BookServiceImpl implements BookService {
             }catch (DAOException e){
                 throw new BookServiceException(e.getMessage(), e);
             }
+            return true;
         }else{
             throw new BookServiceException("Some fields are empty");
         }
