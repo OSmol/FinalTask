@@ -38,7 +38,7 @@ public class User {
     }
 
     public boolean setType(String type) {
-        if(type == "admin" || type == "user") {
+        if(type.equals("admin") || type.equals("user")) {
             this.type = type;
             return true;
         }

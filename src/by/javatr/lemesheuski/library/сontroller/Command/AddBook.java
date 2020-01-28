@@ -23,7 +23,7 @@ public class AddBook implements Command {
             BookService bookService = serviceFactory.getBookService();
             if (type.equals("admin")) {
                 try {
-                    if (bookService.addBook(title, author, year, annotation, genres)) {
+                    if (bookService.addBook(title, author, year, genres, annotation)) {
                         response = type + "&Book successfully added";
                     } else
                         response = type + "&Adding error";

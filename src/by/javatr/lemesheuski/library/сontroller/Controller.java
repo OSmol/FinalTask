@@ -1,7 +1,6 @@
 package by.javatr.lemesheuski.library.сontroller;
 
-import by.javatr.lemesheuski.library.сontroller.Command.Command;
-import by.javatr.lemesheuski.library.сontroller.Command.SignIn;
+import by.javatr.lemesheuski.library.сontroller.Command.*;
 
 public class Controller {
     private final char paramDelimiter='&';
@@ -17,10 +16,16 @@ public class Controller {
                 response = executionCommand.execute(request);
                 break;
             case "REGISTER":
+                executionCommand = new Register();
+                response = executionCommand.execute(request);
                 break;
             case "ADD_BOOK":
+                executionCommand = new AddBook();
+                response = executionCommand.execute(request);
                 break;
             case "GET_BOOKS":
+                executionCommand = new GetBooks();
+                response = executionCommand.execute(request);
                 break;
             case "LOGOUT":
                 response="&You have successfully logged out";

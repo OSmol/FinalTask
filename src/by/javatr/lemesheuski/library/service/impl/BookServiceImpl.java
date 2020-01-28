@@ -10,16 +10,34 @@ import java.util.List;
 
 public class BookServiceImpl implements BookService {
     @Override
-    public List<Book> getAllBooks() throws BookServiceException {
+    public String getAllBooks() throws BookServiceException {
         try {
-            return BookDAO.getAll();
+            List<Book> books = BookDAO.getAll();
+            StringBuilder str = new StringBuilder();
+            for(Book book:books){
+                str.append("/n"+book.getTitle()+"/n"+book.getAuthor()+"/n"+book.getYear());
+                String genres ="";
+                for(String genre:book.getGenres())
+                    genres+=genre+" ";
+                str.append(genres.trim()+"\n    ");
+                String annotation = book.getAnnotation();
+                if(annotation.length()>149) {
+                    for (int i = 0, j = 149; j <= annotation.length(); i += 149, j += 149) {
+                        if(!annotation.substring(j).matches("[.1?!, \\-]"))
+                            str.append(annotation.substring(i,j)+"\n    ");
+                    }
+                }else{
+                    str.append(annotation+"\n\n\n");
+                }
+            }
+            return str.toString();
         }catch (DAOException e){
             throw new BookServiceException(e.getMessage(), e);
         }
     }
 
     @Override
-    public boolean addBook(String title, String author, int year, String annotation, List<String> genre) throws BookServiceException {
+    public boolean addBook(String title, String author, int year, List<String> genre, String annotation) throws BookServiceException {
         if(title!=null||author!=null||annotation!=null||!genre.isEmpty()){
             try {
                 BookDAO.addBook(title, author, year, annotation, genre);

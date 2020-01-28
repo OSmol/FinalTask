@@ -14,14 +14,15 @@ public class Register implements Command {
         String password = requestParams[2];
         ServiceFactory serviceFactory = ServiceFactory.getInstance();
         UserService userService = serviceFactory.getUserService();
-        if(type.equals("")){
+        if(!type.equals("")){
             try {
                 if(userService.register(login, password)){
                     response = "&You have successfully registered";
                 }else
                     response = "&Registration error";
             }catch (ServiceException e){
-                response = "&Authorization error";
+                System.out.println(e.getMessage());
+                response = "&Registration error";
             }
         }else{
             response = "&You are already logged in";

@@ -11,14 +11,19 @@ import java.util.List;
 public class UserDAO {
     public static List<User> getAll() throws DAOException {
         List<User> users = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("./user.txt"))) {
-            String line;
-            String[] lines;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                lines = line.split(" ");
-                if (lines.length == 3) {
-                    users.add(new User(lines[0], lines[1], lines[2]));
+        try {
+            File file = new File("./user.txt");
+            if (!file.exists())
+                file.createNewFile();
+            try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line;
+                String[] lines;
+                while ((line = reader.readLine()) != null) {
+                    line = line.trim();
+                    lines = line.split(" ");
+                    if (lines.length == 3) {
+                        users.add(new User(lines[0], lines[1], lines[2]));
+                    }
                 }
             }
         } catch (IOException e) {
@@ -47,7 +52,7 @@ public class UserDAO {
             User user = new User(login, password, type);
             return addUser(user);
         } catch (UserException e) {
-            throw new DAOException("Object create exception" + e.getMessage());
+            throw new DAOException("Object create exception " + e.getMessage());
         }
     }
 
@@ -63,7 +68,7 @@ public class UserDAO {
     private static boolean addUser(User user) throws DAOException {
         if (findUserByLogin(user.getLogin()) == null) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("./user.txt", true))) {
-                writer.write(user.getLogin() + " " + user.getLogin() + " " + user.getType());
+                writer.write(user.getLogin() + " " + user.getPassword() + " " + user.getType()+"\n");
             } catch (IOException e) {
                 throw new DAOException(e.getMessage(), e);
             }
