@@ -1,10 +1,11 @@
 import by.javatr.lemesheuski.library.entity.User;
+import by.javatr.lemesheuski.library.entity.exception.UserException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class UserTest {
     @Test
-    public void setPasswordTest_lessThen4(){
+    public void setPasswordTest_lessThen4() throws UserException {
         String expPass="111111";
         User user = new User("1111111", "111111", "admin");
         user.setPassword("uId");
@@ -12,7 +13,7 @@ public class UserTest {
     }
 
     @Test
-    public void setPasswordTest_moreThen20(){
+    public void setPasswordTest_moreThen20() throws UserException{
         String expPass="111111";
         User user = new User("111111", "111111", "admin");
         user.setPassword("HereIsMoreThenTwentyIGuess");
@@ -20,7 +21,7 @@ public class UserTest {
     }
 
     @Test
-    public void setLoginTest(){
+    public void setLoginTest() throws UserException{
         String expLogin="MainAdm";
         User user = new User("1111111", "111111", "admin");
         user.setLogin("MainAdm");

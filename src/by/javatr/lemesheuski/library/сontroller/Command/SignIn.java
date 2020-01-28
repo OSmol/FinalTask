@@ -15,7 +15,7 @@ public class SignIn implements Command {
         String password = requestParams[2];
         ServiceFactory serviceFactory = ServiceFactory.getInstance();
         UserService userService = serviceFactory.getUserService();
-        if(type.equals("")){
+        if(!type.equals("")){
             try {
                 type = userService.signIn(login, password);
                 response = type+"&You are already logged in";

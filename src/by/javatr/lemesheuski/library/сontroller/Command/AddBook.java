@@ -15,22 +15,26 @@ public class AddBook implements Command {
         String type = requestParams[0];
         String title = requestParams[1];
         String author = requestParams[2];
-        int year = Integer.parseInt(requestParams[3]);
-        String annotation = requestParams[4];
-        List<String> genres = Arrays.asList(requestParams[5].split(" "));
-        ServiceFactory serviceFactory = ServiceFactory.getInstance();
-        BookService bookService = serviceFactory.getBookService();
-        if(type.equals("admin")){
-            try {
-                if(bookService.addBook(title,author,year,annotation,genres)){
-                    response = type+"&Book successfully added";
-                }else
-                    response = type+"&Adding error";
-            }catch (ServiceException e){
-                response = type+"&Adding error";
+        try {
+            int year = Integer.parseInt(requestParams[3]);
+            String annotation = requestParams[4];
+            List<String> genres = Arrays.asList(requestParams[5].split(" "));
+            ServiceFactory serviceFactory = ServiceFactory.getInstance();
+            BookService bookService = serviceFactory.getBookService();
+            if (type.equals("admin")) {
+                try {
+                    if (bookService.addBook(title, author, year, annotation, genres)) {
+                        response = type + "&Book successfully added";
+                    } else
+                        response = type + "&Adding error";
+                } catch (ServiceException e) {
+                    response = type + "&Adding error";
+                }
+            } else {
+                response = type + "&You are not administrator";
             }
-        }else{
-            response = type+"&You are not administrator";
+        }catch (NumberFormatException e){
+            response="Illegal argument";
         }
         return response;
     }
