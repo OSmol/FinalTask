@@ -7,6 +7,7 @@ public class Controller {
 
     public String executeTask(String request){
         String command = request.substring(0,request.indexOf(paramDelimiter));
+        request = request.substring(request.indexOf(paramDelimiter)+1);
         command = command.toUpperCase();
         String response = null;
         Command executionCommand;
@@ -34,7 +35,7 @@ public class Controller {
                 response="exit";
                 break;
             default:
-                response = "Could not found this command";
+                response = request.substring(0,request.indexOf(paramDelimiter)) + "&Could not found this command";
         }
         return response;
     }

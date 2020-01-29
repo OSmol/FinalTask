@@ -41,7 +41,7 @@ public class Book {
     }
 
     public boolean setYear(int year) {
-        if (year < 1800 || year> 2020) {
+        if (year > 1800 && year < 2020) {
             this.year = year;
             return true;
         }
@@ -108,10 +108,11 @@ public class Book {
             genresStr.append(str + " ");
         }
         genresStr.toString().trim();
-        return  title + '\'' +
-                author + '\'' +
-                year +
-                annotation + '\'' +
-                genresStr.toString().trim();
+        return  title + '\n' +
+                author + '\n' +
+                year +'\n'+
+                genresStr.toString().trim()+'\n'+
+                annotation + '\n';
+
     }
 }

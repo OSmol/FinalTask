@@ -8,25 +8,25 @@ public class Main {
     public static void main(String[] args) {
         Controller controller = new Controller();
         Scanner in = new Scanner(System.in);
-        String type="";
+        String type = "";
         String request;
         String response = null;
-        while (true){
+        while (true) {
             System.out.println("Input command");
-            request = type + in.nextLine();
+            request = in.nextLine() + "&" + type + "&";
             System.out.println("Input parameters. To end the input enter \"end\"");
-            while(true){
+            while (true) {
                 String input = in.nextLine();
-                if(input.equals("end")){
+                if (input.equals("end")) {
                     break;
                 }
-                request += "&"+input;
+                request += input + "&";
             }
             response = controller.executeTask(request);
-            if(response.equals("exit"))
+            if (response.equals("exit"))
                 break;
-            String[] responseList=response.split("&");
-            type=responseList[0];
+            String[] responseList = response.split("&");
+            type = responseList[0];
             String message = responseList[1];
             System.out.println(message);
         }

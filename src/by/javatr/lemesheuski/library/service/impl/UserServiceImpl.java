@@ -13,8 +13,10 @@ public class UserServiceImpl implements UserService {
         if(login!=null||password!=null){
             try {
                 User user =  UserDAO.findUserByLogin(login);
-                if(user.getPassword().equals(password)){
-                    return user.getType();
+                if(user!=null) {
+                    if (user.getPassword().equals(password)) {
+                        return user.getType();
+                    }
                 }
                 return null;
             }catch (DAOException e){

@@ -10,19 +10,29 @@ public class SignIn implements Command {
     public String execute(String request) {
         String response;
         String[] requestParams = request.split("&");
-        String type = requestParams[0];
-        String login = requestParams[1];
-        String password = requestParams[2];
-        ServiceFactory serviceFactory = ServiceFactory.getInstance();
-        UserService userService = serviceFactory.getUserService();
-        if(!type.equals("")){
-            try {
-                type = userService.signIn(login, password);
-                response = type+"&You are already logged in";
-            }catch (ServiceException e){
-                response = "&Authorization error";
-            }
-        }else{
+        String type = "";
+        if (requestParams.length != 0) {
+            type = requestParams[0];
+        }
+        if (type.equals("")) {
+            if (requestParams.length == 3) {
+                String login = requestParams[1];
+                String password = requestParams[2];
+                ServiceFactory serviceFactory = ServiceFactory.getInstance();
+                UserService userService = serviceFactory.getUserService();
+                try {
+                    type = userService.signIn(login, password);
+                    if (type != null)
+                        response = type + "&You are successfully logged in as " + type;
+                    else
+                        response = "&Wrong login or password";
+                } catch (ServiceException e) {
+                    response = "&Authorization error";
+                }
+
+            } else
+                response = "&Illegal parameters";
+        } else {
             response = "&You are already logged in";
         }
         return response;

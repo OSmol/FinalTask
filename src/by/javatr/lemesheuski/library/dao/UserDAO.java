@@ -37,7 +37,7 @@ public class UserDAO {
     public static User findUserByLogin(String login) throws DAOException {
         List<User> users = getAll();
         for (User u : users) {
-            if (u.getLogin() == login)
+            if (u.getLogin().equals(login))
                 return u;
         }
         return null;
@@ -67,9 +67,14 @@ public class UserDAO {
 
     private static boolean addUser(User user) throws DAOException {
         if (findUserByLogin(user.getLogin()) == null) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("./user.txt", true))) {
-                writer.write(user.getLogin() + " " + user.getPassword() + " " + user.getType()+"\n");
-            } catch (IOException e) {
+            try {
+                File file = new File("./user.txt");
+                if (!file.exists())
+                    file.createNewFile();
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("./user.txt", true))) {
+                    writer.write(user.getLogin() + " " + user.getPassword() + " " + user.getType() + "\n");
+                }
+            }catch (IOException e) {
                 throw new DAOException(e.getMessage(), e);
             }
             return true;

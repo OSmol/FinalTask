@@ -9,24 +9,30 @@ public class Register implements Command {
     public String execute(String request) {
         String response;
         String[] requestParams = request.split("&");
-        String type = requestParams[0];
-        String login = requestParams[1];
-        String password = requestParams[2];
-        ServiceFactory serviceFactory = ServiceFactory.getInstance();
-        UserService userService = serviceFactory.getUserService();
-        if(!type.equals("")){
-            try {
-                if(userService.register(login, password)){
-                    response = "&You have successfully registered";
-                }else
-                    response = "&Registration error";
-            }catch (ServiceException e){
-                System.out.println(e.getMessage());
-                response = "&Registration error";
-            }
-        }else{
-            response = "&You are already logged in";
+        String type = "";
+        if (requestParams.length != 0) {
+            type = requestParams[0];
         }
+        if (requestParams.length == 3) {
+            String login = requestParams[1];
+            String password = requestParams[2];
+            ServiceFactory serviceFactory = ServiceFactory.getInstance();
+            UserService userService = serviceFactory.getUserService();
+            if (!type.equals("")) {
+                try {
+                    if (userService.register(login, password)) {
+                        response = "&You have successfully registered";
+                    } else
+                        response = "&Registration error";
+                } catch (ServiceException e) {
+                    System.out.println(e.getMessage());
+                    response = "&Registration error";
+                }
+            } else {
+                response = "&You are already logged in";
+            }
+        } else
+            response = "&Illegal parameters";
         return response;
     }
 }

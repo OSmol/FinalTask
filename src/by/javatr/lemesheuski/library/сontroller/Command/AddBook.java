@@ -12,29 +12,36 @@ public class AddBook implements Command {
     public String execute(String request) {
         String response;
         String[] requestParams = request.split("&");
-        String type = requestParams[0];
-        String title = requestParams[1];
-        String author = requestParams[2];
-        try {
-            int year = Integer.parseInt(requestParams[3]);
-            String annotation = requestParams[4];
-            List<String> genres = Arrays.asList(requestParams[5].split(" "));
-            ServiceFactory serviceFactory = ServiceFactory.getInstance();
-            BookService bookService = serviceFactory.getBookService();
-            if (type.equals("admin")) {
+        String type = "";
+        if (requestParams.length != 0) {
+            type = requestParams[0];
+        }
+        if (type.equals("admin")) {
+            if (requestParams.length == 6) {
+                String title = requestParams[1];
+                String author = requestParams[2];
                 try {
-                    if (bookService.addBook(title, author, year, genres, annotation)) {
-                        response = type + "&Book successfully added";
-                    } else
+                    int year = Integer.parseInt(requestParams[3]);
+                    List<String> genres = Arrays.asList(requestParams[4].split(" "));
+                    String annotation = requestParams[5];
+                    ServiceFactory serviceFactory = ServiceFactory.getInstance();
+                    BookService bookService = serviceFactory.getBookService();
+                    try {
+                        if (bookService.addBook(title, author, year, genres, annotation)) {
+                            response = type + "&Book successfully added";
+                        } else
+                            response = type + "&Adding error";
+                    } catch (ServiceException e) {
+                        System.out.println(e.getMessage());
                         response = type + "&Adding error";
-                } catch (ServiceException e) {
-                    response = type + "&Adding error";
+                    }
+                } catch (NumberFormatException e) {
+                    response = type + "&Illegal parameters";
                 }
-            } else {
-                response = type + "&You are not administrator";
-            }
-        }catch (NumberFormatException e){
-            response="Illegal argument";
+            } else
+                response = type + "&Illegal parameters";
+        } else {
+            response = type + "&You are not administrator";
         }
         return response;
     }
