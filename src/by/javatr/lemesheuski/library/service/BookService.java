@@ -9,4 +9,6 @@ public interface BookService {
     void addBook(String title, String author, int year, List<String> genre, String annotation) throws BookServiceException;
     void addBookToFavorite(String username, String title, String author) throws BookServiceException;
     String getFavoriteBooks(String username) throws BookServiceException;
+    void deleteBook(String title, String author) throws BookServiceException;
+    void deleteBookFromFavorites(String username, String title, String author) throws BookServiceException;
 }

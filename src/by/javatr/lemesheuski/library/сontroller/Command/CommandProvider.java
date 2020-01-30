@@ -12,6 +12,8 @@ public class CommandProvider {
         repository.put(CommandName.REGISTRATION, new Registration());
         repository.put(CommandName.ADD_BOOK, new AddBook());
         repository.put(CommandName.GET_BOOKS, new GetBooks());
+        repository.put(CommandName.DELETE_BOOK, new DeleteBook());
+        repository.put(CommandName.REMOVE_BOOK_FROM_FAVORITE, new DeleteBookFromFavorite());
         repository.put(CommandName.MARK_AS_FAVORITE, new AddBookToFavorite());
         repository.put(CommandName.GET_FAVORITE_BOOKS, new GetFavoriteBooks());
         repository.put(CommandName.EXIT, new Exit());

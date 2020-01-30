@@ -5,6 +5,7 @@ import by.javatr.lemesheuski.library.dao.exception.DAOException;
 import by.javatr.lemesheuski.library.entity.Book;
 import by.javatr.lemesheuski.library.service.BookService;
 import by.javatr.lemesheuski.library.service.exception.BookServiceException;
+import by.javatr.lemesheuski.library.service.exception.ServiceException;
 
 import java.util.List;
 
@@ -61,6 +62,32 @@ public class BookServiceImpl implements BookService {
                 return str.toString();
             }catch (DAOException e){
                 throw new BookServiceException(e.getMessage(), e);
+            }
+        }else{
+            throw new BookServiceException("Some fields are empty");
+        }
+    }
+
+    @Override
+    public void deleteBook(String title, String author) throws BookServiceException {
+        if(title!=null||author!=null){
+            try{
+                BookDAO.deleteBook(title, author);
+            }catch (DAOException e){
+                throw new BookServiceException(e.getMessage());
+            }
+        }else{
+            throw new BookServiceException("Some fields are empty");
+        }
+    }
+
+    @Override
+    public void deleteBookFromFavorites(String username, String title, String author) throws BookServiceException {
+        if(username!=null||title!=null||author!=null){
+            try{
+                BookDAO.deleteBookFromFavorites(username, title, author);
+            }catch (DAOException e){
+                throw new BookServiceException(e.getMessage());
             }
         }else{
             throw new BookServiceException("Some fields are empty");

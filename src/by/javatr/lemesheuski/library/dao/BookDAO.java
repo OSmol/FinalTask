@@ -59,7 +59,7 @@ public class BookDAO {
                     }
                 }
             }
-        }else
+        } else
             throw new DAOException("You already added this book");
     }
 
@@ -80,6 +80,45 @@ public class BookDAO {
             throw new DAOException(e.getMessage());
         }
         return books;
+    }
+
+    public static void deleteBookFromFavorites(String username, String title, String author)
+            throws DAOException {
+        List<Book> books = getFavoriteBooks(username);
+        Book removable = null;
+        for (Book book : books) {
+            if (book.getTitle().equals(title) && book.getAuthor().equals(author))
+                removable = book;
+        }
+        if(removable!=null) {
+            books.remove(removable);
+            try {
+                File file = getFile("./resources/favorites", username + ".odt");
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                    oos.writeObject(books);
+                }
+            } catch (IOException e) {
+                throw new DAOException(e.getMessage());
+            }
+        }else
+            throw new DAOException("There is no such book");
+    }
+
+    public static void deleteBook(String title, String author)
+            throws DAOException {
+        List<Book> books = getAll();
+        Book book = findBookByTitleAndAuthor(title, author);
+        if (book != null) {
+            try {
+                books.remove(book);
+                File file = getFile("./resources", "books.odt");
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                    oos.writeObject(books);
+                }
+            } catch (IOException e) {
+                throw new DAOException(e.getMessage());
+            }
+        }
     }
 
     public static void addBook(String title, String author, int year, String annotation, List<String> genre)
