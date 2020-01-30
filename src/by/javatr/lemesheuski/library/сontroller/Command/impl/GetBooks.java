@@ -1,13 +1,13 @@
-package by.javatr.lemesheuski.library.сontroller.Command;
+package by.javatr.lemesheuski.library.сontroller.Command.impl;
 
 import by.javatr.lemesheuski.library.service.BookService;
 import by.javatr.lemesheuski.library.service.ServiceFactory;
 import by.javatr.lemesheuski.library.service.exception.ServiceException;
+import by.javatr.lemesheuski.library.сontroller.Command.Command;
 
 public class GetBooks implements Command {
     @Override
     public String execute(String request) {
-        System.out.println(request);
         String response;
         String[] requestParams = request.split("&");
         String type = "";

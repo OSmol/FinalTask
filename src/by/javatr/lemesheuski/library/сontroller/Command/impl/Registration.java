@@ -1,10 +1,11 @@
-package by.javatr.lemesheuski.library.сontroller.Command;
+package by.javatr.lemesheuski.library.сontroller.Command.impl;
 
 import by.javatr.lemesheuski.library.service.ServiceFactory;
 import by.javatr.lemesheuski.library.service.UserService;
 import by.javatr.lemesheuski.library.service.exception.ServiceException;
+import by.javatr.lemesheuski.library.сontroller.Command.Command;
 
-public class Register implements Command {
+public class Registration implements Command {
     @Override
     public String execute(String request) {
         String response;
