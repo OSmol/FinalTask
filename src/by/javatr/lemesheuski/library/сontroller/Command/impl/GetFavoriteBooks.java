@@ -5,7 +5,8 @@ import by.javatr.lemesheuski.library.service.ServiceFactory;
 import by.javatr.lemesheuski.library.service.exception.ServiceException;
 import by.javatr.lemesheuski.library.сontroller.Command.Command;
 
-public class GetBooks implements Command {
+public class GetFavoriteBooks implements Command {
+
     @Override
     public String execute(String request) {
         String response;
@@ -18,10 +19,14 @@ public class GetBooks implements Command {
         }
         ServiceFactory serviceFactory = ServiceFactory.getInstance();
         BookService bookService = serviceFactory.getBookService();
-        try {
-            response = type + "&" + username + "&Books:\n" + bookService.getAllBooks();
-        } catch (ServiceException e) {
-            response = type + "&" + username +"&Error while getting list of books: " + e.getMessage();
+        if (!username.equals("")) {
+            try {
+                response = type + "&" + username + "&Books:\n" + bookService.getFavoriteBooks(username);
+            } catch (ServiceException e) {
+                response = type + "&" + username + "&Error while getting list of books: " + e.getMessage();
+            }
+        }else{
+            response = type + "&" + username +"&You have not favorite books: ";
         }
         return response;
     }

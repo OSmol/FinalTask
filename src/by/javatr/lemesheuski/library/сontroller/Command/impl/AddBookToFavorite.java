@@ -1,12 +1,11 @@
 package by.javatr.lemesheuski.library.сontroller.Command.impl;
 
-
+import by.javatr.lemesheuski.library.service.BookService;
 import by.javatr.lemesheuski.library.service.ServiceFactory;
-import by.javatr.lemesheuski.library.service.UserService;
 import by.javatr.lemesheuski.library.service.exception.ServiceException;
 import by.javatr.lemesheuski.library.сontroller.Command.Command;
 
-public class SignIn implements Command {
+public class AddBookToFavorite implements Command {
     @Override
     public String execute(String request) {
         String response;
@@ -17,26 +16,22 @@ public class SignIn implements Command {
             type = requestParams[0];
             username = requestParams[1];
         }
-        if (type.equals("")) {
+        if (!type.equals("")) {
             if (requestParams.length == 4) {
-                String login = requestParams[2];
-                String password = requestParams[3];
+                String title = requestParams[2];
+                String author = requestParams[3];
                 ServiceFactory serviceFactory = ServiceFactory.getInstance();
-                UserService userService = serviceFactory.getUserService();
+                BookService bookService = serviceFactory.getBookService();
                 try {
-                    type = userService.signIn(login, password);
-                    if (type != null)
-                        response = type + "&"+ login + "&You are successfully logged in as " + type;
-                    else
-                        response = "&&Wrong login or password";
+                    bookService.addBookToFavorite(username, title, author);
+                    response = type + "&" + username + "&Book successfully added to favorite";
                 } catch (ServiceException e) {
-                    response = "&&Authorization error: "+e.getMessage();
+                    response = type + "&" + username + "&Adding error " + e.getMessage();
                 }
-
             } else
-                response = "&&Illegal parameters";
+                response = type + "&" + username + "&Illegal parameters";
         } else {
-            response = type + "&" + username + "&You are already logged in";
+            response = type + "&" + username + "&You are not logged in";
         }
         return response;
     }

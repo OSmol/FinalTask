@@ -15,13 +15,12 @@ public class BookDAO {
             File file = getFile("./resources", "books.odt");
             Object o;
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                    while((o=ois.readObject())!=null){
-                        books=(List<Book>) o;
-                    }
-            }catch (EOFException e){
+                while ((o = ois.readObject()) != null) {
+                    books = (List<Book>) o;
+                }
+            } catch (EOFException e) {
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new DAOException(e.getMessage(), e);
         } catch (Exception e) {
             throw new DAOException(e.getMessage());
@@ -39,19 +38,48 @@ public class BookDAO {
     }
 
     public static void addBookToFavorite(String username, String title, String author) throws DAOException {
-        List<Book> books = getAll();
-        for (Book book : books) {
-            if (book.getTitle().equals(title) && book.getAuthor().equals(author)) {
-                try {
-                    File file = getFile("./resources/favorites", username+".odt");
-                    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true))) {
-                        oos.writeObject(book);
+        List<Book> favoriteBooks = getFavoriteBooks(username);
+        boolean favorite = false;
+        for (Book book : favoriteBooks) {
+            if (book.getTitle().equals(title) && book.getAuthor().equals(author))
+                favorite = true;
+        }
+        if (favorite == false) {
+            List<Book> books = getAll();
+            for (Book book : books) {
+                if (book.getTitle().equals(title) && book.getAuthor().equals(author)) {
+                    try {
+                        favoriteBooks.add(book);
+                        File file = getFile("./resources/favorites", username + ".odt");
+                        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                            oos.writeObject(favoriteBooks);
+                        }
+                    } catch (IOException e) {
+                        throw new DAOException(e.getMessage());
                     }
-                } catch (IOException e) {
-                    throw new DAOException(e.getMessage());
                 }
             }
+        }else
+            throw new DAOException("You already added this book");
+    }
+
+    public static List<Book> getFavoriteBooks(String username) throws DAOException {
+        List<Book> books = new ArrayList<>();
+        try {
+            File file = getFile("./resources/favorites", username + ".odt");
+            Object o;
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                while ((o = ois.readObject()) != null) {
+                    books = (List<Book>) o;
+                }
+            } catch (EOFException e) {
+            }
+        } catch (IOException e) {
+            throw new DAOException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new DAOException(e.getMessage());
         }
+        return books;
     }
 
     public static void addBook(String title, String author, int year, String annotation, List<String> genre)
@@ -75,7 +103,7 @@ public class BookDAO {
         }
     }
 
-    private static File getFile(String path, String filename) throws IOException{
+    private static File getFile(String path, String filename) throws IOException {
         File dir = new File(path);
         if (!dir.isDirectory())
             dir.mkdirs();

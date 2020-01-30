@@ -13,10 +13,8 @@ public class Controller {
     public String executeTask(String request){
         String command = request.substring(0,request.indexOf(paramDelimiter)).toUpperCase();
         request = request.substring(request.indexOf(paramDelimiter)+1);
-        String response = null;
         Command executionCommand;
         executionCommand = provider.getCommand(command);
-        response = executionCommand.execute(request);
-        return response;
+        return executionCommand.execute(request);
     }
 }
