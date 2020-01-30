@@ -11,16 +11,17 @@ public class GetBooks implements Command {
         String response;
         String[] requestParams = request.split("&");
         String type = "";
-        if(requestParams.length != 0) {
+        String username = "";
+        if (requestParams.length >= 2) {
             type = requestParams[0];
+            username = requestParams[1];
         }
         ServiceFactory serviceFactory = ServiceFactory.getInstance();
         BookService bookService = serviceFactory.getBookService();
         try {
-            response = type + "&" + bookService.getAllBooks();
+            response = type + "&" + username + "&Books:\n" + bookService.getAllBooks();
         } catch (ServiceException e) {
-            System.out.println(e.getMessage());
-            response = "&Error while getting list of books";
+            response = type + "&" + username +"&Error while getting list of books: " + e.getMessage();
         }
         return response;
 

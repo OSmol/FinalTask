@@ -2,10 +2,11 @@ package by.javatr.lemesheuski.library.entity;
 
 import by.javatr.lemesheuski.library.entity.exception.BookException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Book {
+public class Book implements Serializable {
     String title;
     String author;
     int year;

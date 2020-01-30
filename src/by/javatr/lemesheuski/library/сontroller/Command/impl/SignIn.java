@@ -12,29 +12,31 @@ public class SignIn implements Command {
         String response;
         String[] requestParams = request.split("&");
         String type = "";
-        if (requestParams.length != 0) {
+        String username = "";
+        if (requestParams.length >= 2) {
             type = requestParams[0];
+            username = requestParams[1];
         }
         if (type.equals("")) {
-            if (requestParams.length == 3) {
-                String login = requestParams[1];
-                String password = requestParams[2];
+            if (requestParams.length == 4) {
+                String login = requestParams[2];
+                String password = requestParams[3];
                 ServiceFactory serviceFactory = ServiceFactory.getInstance();
                 UserService userService = serviceFactory.getUserService();
                 try {
                     type = userService.signIn(login, password);
                     if (type != null)
-                        response = type + "&You are successfully logged in as " + type;
+                        response = type + "&"+ login + "&You are successfully logged in as " + type;
                     else
-                        response = "&Wrong login or password";
+                        response = "&&Wrong login or password";
                 } catch (ServiceException e) {
-                    response = "&Authorization error";
+                    response = "&&Authorization error";
                 }
 
             } else
-                response = "&Illegal parameters";
+                response = "&&Illegal parameters";
         } else {
-            response = "&You are already logged in";
+            response = type + "&" + username + "&You are already logged in";
         }
         return response;
     }

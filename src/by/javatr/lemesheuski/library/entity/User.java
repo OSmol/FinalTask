@@ -2,7 +2,9 @@ package by.javatr.lemesheuski.library.entity;
 
 import by.javatr.lemesheuski.library.entity.exception.UserException;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String login;
     private String password;
     private String type;

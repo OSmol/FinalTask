@@ -11,29 +11,30 @@ public class Registration implements Command {
         String response;
         String[] requestParams = request.split("&");
         String type = "";
-        if (requestParams.length != 0) {
+        String username = "";
+        if (requestParams.length >= 2) {
             type = requestParams[0];
+            username = requestParams[1];
         }
-        if (requestParams.length == 3) {
-            String login = requestParams[1];
-            String password = requestParams[2];
-            ServiceFactory serviceFactory = ServiceFactory.getInstance();
-            UserService userService = serviceFactory.getUserService();
-            if (!type.equals("")) {
+        if (type.equals("")) {
+            if (requestParams.length == 4) {
+                String login = requestParams[2];
+                String password = requestParams[3];
+                ServiceFactory serviceFactory = ServiceFactory.getInstance();
+                UserService userService = serviceFactory.getUserService();
                 try {
                     if (userService.register(login, password)) {
-                        response = "&You have successfully registered";
+                        response = "&&You have successfully registered";
                     } else
-                        response = "&Registration error";
+                        response = "&&Registration error";
                 } catch (ServiceException e) {
-                    System.out.println(e.getMessage());
-                    response = "&Registration error";
+                    response = "&&Registration error " + e.getMessage();
                 }
-            } else {
-                response = "&You are already logged in";
-            }
-        } else
-            response = "&Illegal parameters";
+            } else
+                response = "&&Illegal parameters";
+        } else {
+            response = type + "&" + username + "&You are already logged in";
+        }
         return response;
     }
 }

@@ -15,6 +15,7 @@ public class BookServiceImpl implements BookService {
             List<Book> books = BookDAO.getAll();
             StringBuilder str = new StringBuilder();
             for(Book book:books){
+                System.out.println(book.toString());
                 str.append("\n"+book.getTitle()+"\n"+book.getAuthor()+"\n"+book.getYear()+"\n");
                 String genres ="";
                 for(String genre:book.getGenres())
@@ -47,14 +48,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public boolean addBook(String title, String author, int year, List<String> genre, String annotation) throws BookServiceException {
+    public void addBook(String title, String author, int year, List<String> genre, String annotation) throws BookServiceException {
         if(title!=null||author!=null||annotation!=null||!genre.isEmpty()){
             try {
                 BookDAO.addBook(title, author, year, annotation, genre);
             }catch (DAOException e){
                 throw new BookServiceException(e.getMessage(), e);
             }
-            return true;
         }else{
             throw new BookServiceException("Some fields are empty");
         }

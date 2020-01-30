@@ -6,7 +6,7 @@ public class Logout implements Command {
 
     @Override
     public String execute(String request) {
-        String response="&You have successfully logged out";
+        String response="&&You have successfully logged out";
         return response;
     }
 }

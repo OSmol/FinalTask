@@ -5,7 +5,10 @@ import by.javatr.lemesheuski.library.сontroller.Command.Command;
 public class WrongRequest implements Command {
     @Override
     public String execute(String request) {
-        String response = request.substring(0,request.indexOf('&')) + "&Could not found this command";
+        String type = request.substring(0, request.indexOf('&'));
+        request = request.substring(request.indexOf('&') + 1);
+        String username = request.substring(0, request.indexOf('&'));
+        String response = type + "&" + username + "&Could not found this command";
         return response;
     }
 }

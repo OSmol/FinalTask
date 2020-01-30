@@ -14,35 +14,34 @@ public class AddBook implements Command {
         String response;
         String[] requestParams = request.split("&");
         String type = "";
-        if (requestParams.length != 0) {
+        String username = "";
+        if (requestParams.length >= 2) {
             type = requestParams[0];
+            username = requestParams[1];
         }
         if (type.equals("admin")) {
-            if (requestParams.length == 6) {
-                String title = requestParams[1];
-                String author = requestParams[2];
+            if (requestParams.length == 7) {
+                String title = requestParams[2];
+                String author = requestParams[3];
                 try {
-                    int year = Integer.parseInt(requestParams[3]);
-                    List<String> genres = Arrays.asList(requestParams[4].split(" "));
-                    String annotation = requestParams[5];
+                    int year = Integer.parseInt(requestParams[4]);
+                    List<String> genres = Arrays.asList(requestParams[5].split(" "));
+                    String annotation = requestParams[6];
                     ServiceFactory serviceFactory = ServiceFactory.getInstance();
                     BookService bookService = serviceFactory.getBookService();
                     try {
-                        if (bookService.addBook(title, author, year, genres, annotation)) {
-                            response = type + "&Book successfully added";
-                        } else
-                            response = type + "&Adding error";
+                        bookService.addBook(title, author, year, genres, annotation);
+                        response = type + "&" + username + "&Book successfully added";
                     } catch (ServiceException e) {
-                        System.out.println(e.getMessage());
-                        response = type + "&Adding error";
+                        response = type + "&" + username + "&Adding error " + e.getMessage();
                     }
                 } catch (NumberFormatException e) {
-                    response = type + "&Illegal parameters";
+                    response = type + "&" + username + "&Illegal parameters";
                 }
             } else
-                response = type + "&Illegal parameters";
+                response = type + "&" + username + "&Illegal parameters";
         } else {
-            response = type + "&You are not administrator";
+            response = type + "&" + username + "&You are not administrator";
         }
         return response;
     }

@@ -12,24 +12,16 @@ public class UserDAO {
     public static List<User> getAll() throws DAOException {
         List<User> users = new ArrayList<>();
         try {
-            File file = new File("./user.txt");
-            if (!file.exists())
-                file.createNewFile();
-            try(BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
-                String[] lines;
-                while ((line = reader.readLine()) != null) {
-                    line = line.trim();
-                    lines = line.split(" ");
-                    if (lines.length == 3) {
-                        users.add(new User(lines[0], lines[1], lines[2]));
-                    }
+            File file = getFile("./resources", "user.odt");
+            Object o;
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+                while((o=ois.readObject())!=null){
+                    users=(List<User>) o;
                 }
+            }catch (EOFException e){
             }
-        } catch (IOException e) {
+        }catch (Exception e) {
             throw new DAOException(e.getMessage(), e);
-        } catch (UserException e) {
-            throw new DAOException("Object create exception" + e.getMessage());
         }
         return users;
     }
@@ -56,23 +48,14 @@ public class UserDAO {
         }
     }
 
-//    public static boolean addUser(String login, String password, String type) throws DAOException {
-//        try {
-//            User user = new User(login, password, type);
-//            return addUser(user);
-//        } catch (UserException e) {
-//            throw new DAOException("Object create exception" + e.getMessage());
-//        }
-//    }
-
     private static boolean addUser(User user) throws DAOException {
         if (findUserByLogin(user.getLogin()) == null) {
             try {
-                File file = new File("./user.txt");
-                if (!file.exists())
-                    file.createNewFile();
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter("./user.txt", true))) {
-                    writer.write(user.getLogin() + " " + user.getPassword() + " " + user.getType() + "\n");
+                List<User> users= getAll();
+                users.add(user);
+                File file = getFile("./resources", "user.odt");
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                    oos.writeObject(users);
                 }
             }catch (IOException e) {
                 throw new DAOException(e.getMessage(), e);
@@ -80,5 +63,15 @@ public class UserDAO {
             return true;
         }
         return false;
+    }
+
+    private static File getFile(String path, String filename) throws IOException{
+        File dir = new File(path);
+        if (!dir.isDirectory())
+            dir.mkdirs();
+        File file = new File(dir, filename);
+        if (!file.exists())
+            file.createNewFile();
+        return file;
     }
 }
