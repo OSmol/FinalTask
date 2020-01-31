@@ -107,10 +107,14 @@ public class BookDAO {
     public static void deleteBook(String title, String author)
             throws DAOException {
         List<Book> books = getAll();
-        Book book = findBookByTitleAndAuthor(title, author);
-        if (book != null) {
+        Book removable = null;
+        for (Book book : books) {
+            if (book.getTitle().equals(title) && book.getAuthor().equals(author))
+                removable = book;
+        }
+        if(removable!=null) {
+            books.remove(removable);
             try {
-                books.remove(book);
                 File file = getFile("./resources", "books.odt");
                 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                     oos.writeObject(books);
@@ -118,6 +122,8 @@ public class BookDAO {
             } catch (IOException e) {
                 throw new DAOException(e.getMessage());
             }
+        }else{
+            throw new DAOException("Do not found this book");
         }
     }
 

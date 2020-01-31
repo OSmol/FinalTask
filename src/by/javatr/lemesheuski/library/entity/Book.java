@@ -110,25 +110,20 @@ public class Book implements Serializable {
         for(String genre:this.getGenres())
             genres+=genre+" ";
         str.append(genres.trim()+"\n    ");
-        String annotation = this.getAnnotation();
-        if(annotation.length()>149) {
-            for (int i = 0, j = 149; j <= annotation.length()+149; i += 149, j += 149) {
-                if(annotation.length()>j+1){
-                    if (annotation.substring(j,j+1).matches("[.?!, \\-]")) {
-                        str.append(annotation.substring(i, j + 1).trim() + "\n");
-                        i++;
-                        j++;
-                    }
-                    else
-                        str.append(annotation.substring(i, j).trim() + "-\n");
-                }
-                else{
-                    str.append(annotation.substring(i) + "\n\n\n");
-                }
+        String[] annotation = this.getAnnotation().split(" ");
+        int symbolCounter = 0;
+        int index = 0;
+        while(index != annotation.length){
+            if(symbolCounter+annotation[index].length()<=150){
+                symbolCounter += annotation[index].length()+1;
+                str.append(annotation[index]).append(" ");
+                index++;
+            }else {
+                str.append("\n");
+                symbolCounter=0;
             }
-        }else{
-            str.append(annotation+"\n\n\n");
         }
+        str.append("\n");
         return str.toString();
     }
 }
