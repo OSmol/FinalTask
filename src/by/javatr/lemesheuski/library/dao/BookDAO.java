@@ -107,11 +107,7 @@ public class BookDAO {
     public static void deleteBook(String title, String author)
             throws DAOException {
         List<Book> books = getAll();
-        Book removable = null;
-        for (Book book : books) {
-            if (book.getTitle().equals(title) && book.getAuthor().equals(author))
-                removable = book;
-        }
+        Book removable = findBookByTitleAndAuthor(title, author);
         if(removable!=null) {
             books.remove(removable);
             try {

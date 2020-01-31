@@ -103,6 +103,31 @@ public class Book implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        if(getClass() != o.getClass()) return false;
+
+        Book book = (Book) o;
+
+        if (year != book.year) return false;
+        if (!title.equals(book.title)) return false;
+        if (!author.equals(book.author)) return false;
+        if (!annotation.equals(book.annotation)) return false;
+        return genres.equals(book.genres);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = title.hashCode();
+        result = 31 * result + author.hashCode();
+        result = 31 * result + year;
+        result = 31 * result + annotation.hashCode();
+        result = 31 * result + genres.hashCode();
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
         str.append("\n"+this.getTitle()+"\n"+this.getAuthor()+"\n"+this.getYear()+"\n");
