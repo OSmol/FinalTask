@@ -2,7 +2,6 @@ package by.javatr.lemesheuski.library.service.impl;
 
 import by.javatr.lemesheuski.library.dao.BookDAO;
 import by.javatr.lemesheuski.library.dao.DAOFactory;
-import by.javatr.lemesheuski.library.dao.impl.BookDAOImpl;
 import by.javatr.lemesheuski.library.dao.exception.DAOException;
 import by.javatr.lemesheuski.library.entity.Book;
 import by.javatr.lemesheuski.library.service.BookService;
