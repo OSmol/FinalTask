@@ -5,99 +5,98 @@ import by.javatr.lemesheuski.library.dao.DAOFactory;
 import by.javatr.lemesheuski.library.dao.exception.DAOException;
 import by.javatr.lemesheuski.library.entity.Book;
 import by.javatr.lemesheuski.library.service.BookService;
-import by.javatr.lemesheuski.library.service.exception.BookServiceException;
+import by.javatr.lemesheuski.library.service.exception.ServiceException;
+import by.javatr.lemesheuski.library.service.impl.validator.BookValidator;
+import by.javatr.lemesheuski.library.service.impl.validator.UserValidator;
 
 import java.util.List;
 
 public class BookServiceImpl implements BookService {
 
-    BookDAO bookDAO;
-    {
-        DAOFactory daoFactory = DAOFactory.getInstance();
-        bookDAO = daoFactory.getBookService();
-    }
+    private BookValidator bookValidator = new BookValidator();
+    private UserValidator userValidator = new UserValidator();
+    private BookDAO bookDAO = DAOFactory.getInstance().getBookService();
 
     @Override
-    public String getAllBooks() throws BookServiceException {
+    public String getAllBooks() throws ServiceException {
         try {
             List<Book> books = bookDAO.getAll();
             StringBuilder str = new StringBuilder();
-            for(Book book:books){
+            for (Book book : books) {
                 str.append(book.toString());
             }
             return str.toString();
-        }catch (DAOException e){
-            throw new BookServiceException(e.getMessage(), e);
+        } catch (DAOException e) {
+            throw new ServiceException(e);
         }
     }
 
     @Override
-    public void addBook(String title, String author, int year, List<String> genre, String annotation) throws BookServiceException {
-        if(title!=null||author!=null||annotation!=null||!genre.isEmpty()){
+    public boolean addBook(String title, String author, int year, List<String> genres, String annotation) throws ServiceException {
+        if (bookValidator.isValidTitle(title) && bookValidator.isValidAuthor(author) && bookValidator.isValidYear(year) &&
+                bookValidator.isValidGenre(genres) && bookValidator.isValidAnnotation(annotation)) {
+            Book book = new Book(title, author, year, annotation, genres);
             try {
-                bookDAO.addBook(title, author, year, annotation, genre);
-            }catch (DAOException e){
-                throw new BookServiceException(e.getMessage(), e);
+                bookDAO.addBook(book);
+            } catch (DAOException e) {
+                throw new ServiceException(e);
             }
-        }else{
-            throw new BookServiceException("Some fields are empty");
+            return true;
+        } else {
+            return false;
         }
     }
 
     @Override
-    public void addBookToFavorite(String username, String title, String author) throws BookServiceException {
-        if(username!=null||title!=null||author!=null){
-           try{
-               bookDAO.addBookToFavorite(username, title, author);
-           }catch (DAOException e){
-               throw new BookServiceException(e.getMessage(), e);
-           }
-        }else{
-            throw new BookServiceException("Some fields are empty");
+    public boolean addBookToFavorite(String username, String title, String author) throws ServiceException {
+        if (userValidator.isLoginValid(username) && bookValidator.isValidTitle(title) && bookValidator.isValidAuthor(author)) {
+            try {
+                return bookDAO.addBookToFavorite(username, title, author);
+            } catch (DAOException e) {
+                throw new ServiceException(e);
+            }
+        } else {
+            return false;
         }
     }
 
     @Override
-    public String getFavoriteBooks(String username) throws BookServiceException {
-        if(username!=null){
-            try{
+    public String getFavoriteBooks(String username) throws ServiceException {
+        if (userValidator.isLoginValid(username)) {
+            try {
                 List<Book> books = bookDAO.getFavoriteBooks(username);
                 StringBuilder str = new StringBuilder();
-                for(Book book:books){
+                for (Book book : books) {
                     str.append(book.toString());
                 }
                 return str.toString();
-            }catch (DAOException e){
-                throw new BookServiceException(e.getMessage(), e);
+            } catch (DAOException e) {
+                throw new ServiceException(e);
             }
-        }else{
-            throw new BookServiceException("Some fields are empty");
+        } else {
+            return "There is no books";
         }
     }
 
     @Override
-    public void deleteBook(String title, String author) throws BookServiceException {
-        if(title!=null||author!=null){
-            try{
+    public void deleteBook(String title, String author) throws ServiceException {
+        if (bookValidator.isValidTitle(title) && bookValidator.isValidAuthor(author)) {
+            try {
                 bookDAO.deleteBook(title, author);
-            }catch (DAOException e){
-                throw new BookServiceException(e.getMessage());
+            } catch (DAOException e) {
+                throw new ServiceException(e.getMessage());
             }
-        }else{
-            throw new BookServiceException("Some fields are empty");
         }
     }
 
     @Override
-    public void deleteBookFromFavorites(String username, String title, String author) throws BookServiceException {
-        if(username!=null||title!=null||author!=null){
-            try{
+    public void deleteBookFromFavorites(String username, String title, String author) throws ServiceException {
+        if (userValidator.isLoginValid(username) && bookValidator.isValidTitle(title) && bookValidator.isValidAuthor(author)) {
+            try {
                 bookDAO.deleteBookFromFavorites(username, title, author);
-            }catch (DAOException e){
-                throw new BookServiceException(e.getMessage());
+            } catch (DAOException e) {
+                throw new ServiceException(e.getMessage());
             }
-        }else{
-            throw new BookServiceException("Some fields are empty");
         }
     }
 }

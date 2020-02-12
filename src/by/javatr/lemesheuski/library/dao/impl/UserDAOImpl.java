@@ -3,34 +3,48 @@ package by.javatr.lemesheuski.library.dao.impl;
 import by.javatr.lemesheuski.library.dao.UserDAO;
 import by.javatr.lemesheuski.library.dao.exception.DAOException;
 import by.javatr.lemesheuski.library.entity.User;
-import by.javatr.lemesheuski.library.entity.exception.UserException;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAOImpl implements UserDAO {
+    private String rootDir = "./resources";
+    private String userRepo = "user";
+    private String fileExt = ".odt";
 
-    @Override
-    public List<User> getAll() throws DAOException {
+    private List<User> getAll() throws DAOException {
         List<User> users = new ArrayList<>();
-        try {
-            File file = getFile("./resources", "user.odt");
+        File file = getFile(rootDir, userRepo + fileExt);
+        try (FileInputStream fis = new FileInputStream(file);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
             Object o;
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                while((o=ois.readObject())!=null){
-                    users=(List<User>) o;
+            while (fis.available() > 0) {
+                if ((o = ois.readObject()) != null) {
+                    if (users.getClass() == o.getClass()) {
+                        users = (List<User>) o;
+                    }
                 }
-            }catch (EOFException e){
             }
-        }catch (Exception e) {
-            throw new DAOException(e.getMessage(), e);
+        } catch (FileNotFoundException e){
+            return users;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new DAOException(e);
         }
         return users;
     }
 
     @Override
-    public User findUserByLogin(String login) throws DAOException {
+    public User findUserByLoginAndPassword(String login, String password) throws DAOException {
+        List<User> users = getAll();
+        for (User u : users) {
+            if (u.getLogin().equals(login) && u.getPassword().equals(password))
+                return u;
+        }
+        return null;
+    }
+
+    private User findUserByLogin(String login) throws DAOException {
         List<User> users = getAll();
         for (User u : users) {
             if (u.getLogin().equals(login))
@@ -40,29 +54,19 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean addUser(String login, String password) throws DAOException {
+    public boolean addUser(User user) throws DAOException {
         String type;
-        if (getAll().isEmpty())
+        List<User> users = getAll();
+        if (users.isEmpty())
             type = "admin";
         else type = "user";
-        try {
-            User user = new User(login, password, type);
-            return addUser(user);
-        } catch (UserException e) {
-            throw new DAOException("Object create exception " + e.getMessage());
-        }
-    }
-
-    private boolean addUser(User user) throws DAOException {
+        user.setType(type);
         if (findUserByLogin(user.getLogin()) == null) {
-            try {
-                List<User> users= getAll();
-                users.add(user);
-                File file = getFile("./resources", "user.odt");
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                    oos.writeObject(users);
-                }
-            }catch (IOException e) {
+            File file = getFile(rootDir, userRepo + fileExt);
+            users.add(user);
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                oos.writeObject(users);
+            } catch (IOException e) {
                 throw new DAOException(e.getMessage(), e);
             }
             return true;
@@ -70,13 +74,10 @@ public class UserDAOImpl implements UserDAO {
         return false;
     }
 
-    private File getFile(String path, String filename) throws IOException{
+    private File getFile(String path, String filename) {
         File dir = new File(path);
         if (!dir.isDirectory())
             dir.mkdirs();
-        File file = new File(dir, filename);
-        if (!file.exists())
-            file.createNewFile();
-        return file;
+        return new File(dir, filename);
     }
 }

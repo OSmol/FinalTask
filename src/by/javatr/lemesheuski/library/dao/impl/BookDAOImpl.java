@@ -3,36 +3,44 @@ package by.javatr.lemesheuski.library.dao.impl;
 import by.javatr.lemesheuski.library.dao.BookDAO;
 import by.javatr.lemesheuski.library.dao.exception.DAOException;
 import by.javatr.lemesheuski.library.entity.Book;
-import by.javatr.lemesheuski.library.entity.exception.BookException;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookDAOImpl implements BookDAO {
+    private String rootDir = "./resources";
+    private String rootDirFavorites = "./resources/favorites";
+    private String bookRepo = "books";
+    private String fileExt = ".odt";
+
     @Override
     public List<Book> getAll() throws DAOException {
+        return getAllFrom(getFile(rootDir, bookRepo + fileExt));
+    }
+
+    private List<Book> getAllFrom(File file) throws DAOException {
         List<Book> books = new ArrayList<>();
-        try {
-            File file = getFile("./resources", "books.odt");
+        try (FileInputStream fis = new FileInputStream(file);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
             Object o;
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                while ((o = ois.readObject()) != null) {
-                    books = (List<Book>) o;
+            while (fis.available() > 0) {
+                if ((o = ois.readObject()) != null) {
+                    if (books.getClass() == o.getClass()) {
+                        books = (List<Book>) o;
+                    }
                 }
-            } catch (EOFException e) {
             }
-        } catch (IOException e) {
-            throw new DAOException(e.getMessage(), e);
-        } catch (Exception e) {
-            throw new DAOException(e.getMessage());
+        } catch (FileNotFoundException e) {
+            return books;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new DAOException(e);
         }
         return books;
     }
 
-    @Override
-    public Book findBookByTitleAndAuthor(String title, String author) throws DAOException {
-        List<Book> books = getAll();
+    public Book findBookByTitleAndAuthorFrom(String title, String author, File file) throws DAOException {
+        List<Book> books = getAllFrom(file);
         for (Book book : books) {
             if (book.getTitle().equals(title) && book.getAuthor().equals(author))
                 return book;
@@ -41,124 +49,83 @@ public class BookDAOImpl implements BookDAO {
     }
 
     @Override
-    public void addBookToFavorite(String username, String title, String author) throws DAOException {
-        List<Book> favoriteBooks = getFavoriteBooks(username);
-        boolean favorite = false;
-        for (Book book : favoriteBooks) {
-            if (book.getTitle().equals(title) && book.getAuthor().equals(author))
-                favorite = true;
-        }
-        if (favorite == false) {
-            List<Book> books = getAll();
-            for (Book book : books) {
-                if (book.getTitle().equals(title) && book.getAuthor().equals(author)) {
-                    try {
-                        favoriteBooks.add(book);
-                        File file = getFile("./resources/favorites", username + ".odt");
-                        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                            oos.writeObject(favoriteBooks);
-                        }
-                    } catch (IOException e) {
-                        throw new DAOException(e.getMessage());
-                    }
+    public boolean addBookToFavorite(String username, String title, String author) throws DAOException {
+        File favoritesFile = getFile(rootDirFavorites, username + fileExt);
+        File repoFile = getFile(rootDir, bookRepo + fileExt);
+        Book book = findBookByTitleAndAuthorFrom(title, author, favoritesFile);
+        List<Book> favoriteBooks = getAllFrom(favoritesFile);
+        if (book == null) {
+            book = findBookByTitleAndAuthorFrom(title, author, repoFile);
+            if (book != null) {
+                favoriteBooks.add(book);
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(favoritesFile))) {
+                    oos.writeObject(favoriteBooks);
+                } catch (IOException e) {
+                    throw new DAOException(e);
                 }
+                return true;
             }
-        } else
-            throw new DAOException("You already added this book");
+        }
+        return false;
     }
 
     @Override
     public List<Book> getFavoriteBooks(String username) throws DAOException {
-        List<Book> books = new ArrayList<>();
-        try {
-            File file = getFile("./resources/favorites", username + ".odt");
-            Object o;
-            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                while ((o = ois.readObject()) != null) {
-                    books = (List<Book>) o;
-                }
-            } catch (EOFException e) {
-            }
-        } catch (IOException e) {
-            throw new DAOException(e.getMessage(), e);
-        } catch (Exception e) {
-            throw new DAOException(e.getMessage());
-        }
-        return books;
+        return getAllFrom(getFile(rootDirFavorites, username + fileExt));
     }
 
     @Override
     public void deleteBookFromFavorites(String username, String title, String author)
             throws DAOException {
-        List<Book> books = getFavoriteBooks(username);
-        Book removable = null;
-        for (Book book : books) {
-            if (book.getTitle().equals(title) && book.getAuthor().equals(author))
-                removable = book;
-        }
-        if(removable!=null) {
-            books.remove(removable);
-            try {
-                File file = getFile("./resources/favorites", username + ".odt");
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                    oos.writeObject(books);
-                }
+        File favoritesFile = getFile(rootDirFavorites, username + fileExt);
+        Book book = findBookByTitleAndAuthorFrom(title, author, favoritesFile);
+        if (book != null) {
+            List<Book> favoriteBooks = getAllFrom(favoritesFile);
+            favoriteBooks.remove(book);
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(favoritesFile))) {
+                oos.writeObject(favoriteBooks);
             } catch (IOException e) {
-                throw new DAOException(e.getMessage());
+                throw new DAOException(e);
             }
-        }else
-            throw new DAOException("There is no such book");
+        }
+
     }
 
     @Override
     public void deleteBook(String title, String author)
             throws DAOException {
-        List<Book> books = getAll();
-        Book removable = findBookByTitleAndAuthor(title, author);
-        if(removable!=null) {
-            books.remove(removable);
-            try {
-                File file = getFile("./resources", "books.odt");
-                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                    oos.writeObject(books);
-                }
+        File repoFile = getFile(rootDir, bookRepo + fileExt);
+        List<Book> books = getAllFrom(repoFile);
+        Book book = findBookByTitleAndAuthorFrom(title, author, repoFile);
+        if (book != null) {
+            books.remove(book);
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(repoFile))) {
+                oos.writeObject(books);
             } catch (IOException e) {
                 throw new DAOException(e.getMessage());
             }
-        }else{
-            throw new DAOException("Do not found this book");
         }
+
     }
 
     @Override
-    public void addBook(String title, String author, int year, String annotation, List<String> genre)
-            throws DAOException {
-        try {
-            Book book = new Book(title, author, year, annotation, genre);
-            List<Book> books = getAll();
+    public void addBook(Book book) throws DAOException {
+        File repoFile = getFile(rootDir, bookRepo + fileExt);
+        if (findBookByTitleAndAuthorFrom(book.getTitle(), book.getAuthor(), repoFile) == null) {
+            List<Book> books = getAllFrom(repoFile);
             books.add(book);
-            if (findBookByTitleAndAuthor(book.getTitle(), book.getAuthor()) == null) {
-                try {
-                    File file = getFile("./resources", "books.odt");
-                    try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-                        oos.writeObject(books);
-                    }
-                } catch (IOException e) {
-                    throw new DAOException(e.getMessage());
-                }
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(repoFile))) {
+                oos.writeObject(books);
+            } catch (IOException e) {
+                throw new DAOException(e);
             }
-        } catch (BookException e) {
-            throw new DAOException("Object create exception" + e.getMessage());
         }
     }
 
-    private File getFile(String path, String filename) throws IOException {
+    private File getFile(String path, String filename) {
         File dir = new File(path);
         if (!dir.isDirectory())
             dir.mkdirs();
-        File file = new File(dir, filename);
-        if (!file.exists())
-            file.createNewFile();
-        return file;
+        return new File(dir, filename);
     }
 }

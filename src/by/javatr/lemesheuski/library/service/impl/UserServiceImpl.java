@@ -5,44 +5,39 @@ import by.javatr.lemesheuski.library.dao.UserDAO;
 import by.javatr.lemesheuski.library.dao.exception.DAOException;
 import by.javatr.lemesheuski.library.entity.User;
 import by.javatr.lemesheuski.library.service.UserService;
-import by.javatr.lemesheuski.library.service.exception.UserServiceException;
+import by.javatr.lemesheuski.library.service.exception.ServiceException;
+import by.javatr.lemesheuski.library.service.impl.validator.UserValidator;
 
 public class UserServiceImpl implements UserService {
-    UserDAO userDAO;
-    {
-        DAOFactory daoFactory = DAOFactory.getInstance();
-        userDAO = daoFactory.getUserService();
-    }
+    UserDAO userDAO = DAOFactory.getInstance().getUserService();
+    private UserValidator userValidator = new UserValidator();
 
     @Override
-    public String signIn(String login, String password) throws UserServiceException{
-        if(login!=null||password!=null){
+    public User signIn(String login, String password) throws ServiceException{
+        if(userValidator.isLoginValid(login) && userValidator.isPasswordValid(password)){
             try {
-                User user =  userDAO.findUserByLogin(login);
+                User user =  userDAO.findUserByLoginAndPassword(login, password);
                 if(user!=null) {
-                    if (user.getPassword().equals(password)) {
-                        return user.getType();
-                    }
+                        return user;
                 }
-                return null;
             }catch (DAOException e){
-                throw new UserServiceException(e.getMessage(), e);
+                throw new ServiceException(e);
             }
-        }else{
-            throw new UserServiceException("Login or password are empty");
         }
+        return null;
     }
 
     @Override
-    public boolean register(String login, String password) throws UserServiceException{
-        if(login!=null||password!=null){
+    public boolean register(String login, String password) throws ServiceException{
+        if(userValidator.isLoginValid(login) && userValidator.isPasswordValid(password)){
+            User user = new User(login, password);
             try {
-                return userDAO.addUser(login, password);
+                return userDAO.addUser(user);
             }catch (DAOException e){
-                throw new UserServiceException(e.getMessage(), e);
+                throw new ServiceException(e);
             }
         }else{
-            throw new UserServiceException("Login or password are empty");
+            return false;
         }
     }
 }

@@ -1,10 +1,10 @@
 package by.javatr.lemesheuski.library.entity;
 
-import by.javatr.lemesheuski.library.entity.exception.UserException;
-
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String login;
     private String password;
     private String type;
@@ -13,54 +13,35 @@ public class User implements Serializable {
         return login;
     }
 
-    public boolean setLogin(String login) {
-        String loginPattern = "[a-zA-Z1-90]{5,20}";
-        if (login != null && login.matches(loginPattern)) {
-            this.login = login;
-            return true;
-        }
-        return false;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public boolean setPassword(String password) {
-        String passwordPattern="[a-zA-Z1-90]{4,20}";
-        if(password != null && password.matches(passwordPattern)) {
-            this.password = password;
-            return true;
-        }
-        return false;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getType() {
         return type;
     }
 
-    public boolean setType(String type) {
-        if(type.equals("admin") || type.equals("user")) {
-            this.type = type;
-            return true;
-        }
-        return false;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public User(String login, String password, String type)
-    throws UserException {
-        if(login == null)
-            throw new UserException("Login is empty");
-        if(password == null)
-            throw new UserException("Password is empty");
-        if(type == null)
-            throw new UserException("Type is empty");
-        if(!setLogin(login))
-            throw new UserException("Login is not correct");
-        if(!setPassword(password))
-            throw new UserException("Password is not correct");
-        if(!setType(type))
-            throw new UserException("Type is not correct");
+    public User(String login, String password, String type){
+        setLogin(login);
+        setPassword(password);
+        setType(type);
+    }
+
+    public User(String login, String password){
+        setLogin(login);
+        setPassword(password);
     }
 
     @Override

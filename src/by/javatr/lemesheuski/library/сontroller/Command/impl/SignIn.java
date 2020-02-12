@@ -1,6 +1,7 @@
 package by.javatr.lemesheuski.library.сontroller.Command.impl;
 
 
+import by.javatr.lemesheuski.library.entity.User;
 import by.javatr.lemesheuski.library.service.ServiceFactory;
 import by.javatr.lemesheuski.library.service.UserService;
 import by.javatr.lemesheuski.library.service.exception.ServiceException;
@@ -24,15 +25,14 @@ public class SignIn implements Command {
                 ServiceFactory serviceFactory = ServiceFactory.getInstance();
                 UserService userService = serviceFactory.getUserService();
                 try {
-                    type = userService.signIn(login, password);
-                    if (type != null)
-                        response = type + "&"+ login + "&You are successfully logged in as " + type;
+                    User user = userService.signIn(login, password);
+                    if (user != null)
+                        response = user.getType() + "&"+ user.getLogin() + "&You are successfully logged in as " + user.getType();
                     else
                         response = "&&Wrong login or password";
                 } catch (ServiceException e) {
                     response = "&&Authorization error: "+e.getMessage();
                 }
-
             } else
                 response = "&&Illegal parameters";
         } else {

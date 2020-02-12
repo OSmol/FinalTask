@@ -1,10 +1,11 @@
 package by.javatr.lemesheuski.library.service;
 
-import by.javatr.lemesheuski.library.service.exception.UserServiceException;
+import by.javatr.lemesheuski.library.entity.User;
+import by.javatr.lemesheuski.library.service.exception.ServiceException;
 
 public interface UserService {
-    String signIn(String login, String password) throws UserServiceException;
-    boolean register(String login,String password) throws UserServiceException;
+    User signIn(String login, String password) throws ServiceException;
+    boolean register(String login,String password) throws ServiceException;
 
 
 

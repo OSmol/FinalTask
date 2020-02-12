@@ -7,10 +7,9 @@ import java.util.List;
 
 public interface BookDAO {
     List<Book> getAll() throws DAOException;
-    void addBook(String title, String author, int year, String annotation, List<String> genre)throws DAOException;
+    void addBook(Book book)throws DAOException;
     void deleteBook(String title, String author) throws DAOException;
-    Book findBookByTitleAndAuthor(String title, String author) throws DAOException;
-    void addBookToFavorite(String username, String title, String author) throws DAOException;
+    boolean addBookToFavorite(String username, String title, String author) throws DAOException;
     List<Book> getFavoriteBooks(String username) throws DAOException;
     void deleteBookFromFavorites(String username, String title, String author) throws DAOException;
 

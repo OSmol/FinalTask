@@ -1,7 +1,5 @@
 package by.javatr.lemesheuski.library.entity;
 
-import by.javatr.lemesheuski.library.entity.exception.BookException;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,96 +15,60 @@ public class Book implements Serializable {
         return title;
     }
 
-    public boolean setTitle(String title) {
-        if (title != null) {
-            this.title = title;
-            return true;
-        }
-        return false;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getAuthor() {
         return author;
     }
 
-    public boolean setAuthor(String author) {
-        if(author != null) {
-            this.author = author;
-            return true;
-        }
-        return false;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public int getYear() {
         return year;
     }
 
-    public boolean setYear(int year) {
-        if (year > 1800 && year < 2020) {
-            this.year = year;
-            return true;
-        }
-        return false;
+    public void setYear(int year) {
+        this.year = year;
     }
 
     public String getAnnotation() {
         return annotation;
     }
 
-    public boolean setAnnotation(String annotation) {
-        if(annotation!=null){
-            if(annotation.length()>20 && annotation.length()<1000){
-                this.annotation = annotation;
-                return true;
-            }
-        }
-        return false;
+    public void setAnnotation(String annotation) {
+        this.annotation = annotation;
     }
 
     public List<String> getGenres() {
         List<String> tmp = new ArrayList<>();
-        for (String genre:genres) {
+        for (String genre : genres) {
             tmp.add(genre);
         }
         return tmp;
     }
 
-    public boolean setGenres(List<String> genres) {
-        if(!genres.isEmpty()){
-            this.genres = genres;
-            return true;
-        }
-        return false;
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
     }
 
     public Book(String title, String author, int year,
-                String annotation, List<String> genres)
-    throws BookException {
-        if(title == null)
-            throw new BookException("Title is empty");
-        if(author == null)
-            throw new BookException("Author is empty");
-        if(annotation == null)
-            throw new BookException("Annotation is empty");
-        if(genres == null)
-            throw new BookException("Genres is empty");
-        if(!setTitle(title))
-            throw new BookException("Incorrect title");
-        if(!setAuthor(author))
-            throw new BookException("Incorrect author");
-        if(!setYear(year))
-            throw new BookException("Incorrect year");
-        if(!setAnnotation(annotation))
-            throw new BookException("Incorrect annotation");
-        if(!setGenres(genres))
-            throw new BookException("Incorrect genres");
+                String annotation, List<String> genres) {
+        setTitle(title);
+        setAuthor(author);
+        setYear(year);
+        setAnnotation(annotation);
+        setGenres(genres);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if(getClass() != o.getClass()) return false;
+        if (getClass() != o.getClass()) return false;
 
         Book book = (Book) o;
 
@@ -130,22 +92,26 @@ public class Book implements Serializable {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append("\n"+this.getTitle()+"\n"+this.getAuthor()+"\n"+this.getYear()+"\n");
-        String genres ="";
-        for(String genre:this.getGenres())
-            genres+=genre+" ";
-        str.append(genres.trim()+"\n    ");
+        str.append("\n" + this.getTitle() + "\n" + this.getAuthor() + "\n" + this.getYear() + "\n");
+        String genres = "";
+        for (String genre : this.getGenres())
+            genres += genre + " ";
+        str.append(genres.trim() + "\n    ");
         String[] annotation = this.getAnnotation().split(" ");
         int symbolCounter = 0;
         int index = 0;
-        while(index != annotation.length){
-            if(symbolCounter+annotation[index].length()<=150){
-                symbolCounter += annotation[index].length()+1;
+        while (index != annotation.length) {
+            if (symbolCounter + annotation[index].length() <= 150) {
+                symbolCounter += annotation[index].length() + 1;
                 str.append(annotation[index]).append(" ");
                 index++;
-            }else {
+            } else {
+                if(annotation[index].length()>150){
+                    str.append(annotation[index]).append(" ");
+                    index++;
+                }
                 str.append("\n");
-                symbolCounter=0;
+                symbolCounter = 0;
             }
         }
         str.append("\n");

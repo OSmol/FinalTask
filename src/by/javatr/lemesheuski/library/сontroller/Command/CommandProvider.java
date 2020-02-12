@@ -24,10 +24,14 @@ public class CommandProvider {
     public Command getCommand(String name){
         CommandName commandName;
         Command command;
-        try{
-            commandName = CommandName.valueOf(name.toUpperCase());
-            command = repository.get(commandName);
-        }catch(IllegalArgumentException | NullPointerException e){
+        if (name != null) {
+            try {
+                commandName = CommandName.valueOf(name.toUpperCase());
+                command = repository.get(commandName);
+            } catch (IllegalArgumentException e) {
+                command = repository.get(CommandName.WRONG_REQUEST);
+            }
+        }else {
             command = repository.get(CommandName.WRONG_REQUEST);
         }
         return command;
