@@ -8,7 +8,7 @@ import by.javatr.lemesheuski.library.сontroller.Command.Command;
 public class GetFavoriteBooks implements Command {
 
     @Override
-    public String execute(String request) {
+    public String execute(String request) {// не лепи код, структурируй его, пустые строки денег не просят
         String response;
         String[] requestParams = request.split("&");
         String type = "";
