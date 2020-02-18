@@ -18,7 +18,8 @@ public class BookServiceImpl implements BookService {
     private BookDAO bookDAO = DAOFactory.getInstance().getBookService();
 
     @Override
-    public String getAllBooks() throws ServiceException {
+    public String getAllBooks() throws ServiceException {// почему это метод возвращает String, а не List<Book>
+        // откуда этот метод знает, как книги должны лыть отображены, может, их вообще никто никуда выводить не собирается
         try {
             List<Book> books = bookDAO.getAll();
             StringBuilder str = new StringBuilder();
@@ -34,7 +35,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public boolean addBook(String title, String author, int year, List<String> genres, String annotation) throws ServiceException {
         if (bookValidator.isValidTitle(title) && bookValidator.isValidAuthor(author) && bookValidator.isValidYear(year) &&
-                bookValidator.isValidGenre(genres) && bookValidator.isValidAnnotation(annotation)) {
+                bookValidator.isValidGenre(genres) && bookValidator.isValidAnnotation(annotation)) {// покороче валидацию (ООП используй), я на четвертой проверке забыла, что делается
             Book book = new Book(title, author, year, annotation, genres);
             try {
                 bookDAO.addBook(book);
