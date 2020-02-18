@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Book implements Serializable {
-    String title;
+    String title;// куда делись атрибуты доступа?
     String author;
     int year;
     String annotation;
@@ -56,7 +56,7 @@ public class Book implements Serializable {
     }
 
     public Book(String title, String author, int year,
-                String annotation, List<String> genres) {
+                String annotation, List<String> genres) {// ну, как-то неожиданно в середине кода встретить конструктор
         setTitle(title);
         setAuthor(author);
         setYear(year);
@@ -90,7 +90,7 @@ public class Book implements Serializable {
     }
 
     @Override
-    public String toString() {
+    public String toString() {// toString для списков уже определен, не изобретай колеса
         StringBuilder str = new StringBuilder();
         str.append("\n" + this.getTitle() + "\n" + this.getAuthor() + "\n" + this.getYear() + "\n");
         String genres = "";
@@ -100,7 +100,7 @@ public class Book implements Serializable {
         String[] annotation = this.getAnnotation().split(" ");
         int symbolCounter = 0;
         int index = 0;
-        while (index != annotation.length) {
+        while (index != annotation.length) {// ойййй, это уже очень хорошие колеса
             if (symbolCounter + annotation[index].length() <= 150) {
                 symbolCounter += annotation[index].length() + 1;
                 str.append(annotation[index]).append(" ");
