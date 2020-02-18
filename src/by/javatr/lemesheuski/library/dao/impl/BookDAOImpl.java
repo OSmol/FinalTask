@@ -32,7 +32,7 @@ public class BookDAOImpl implements BookDAO {
                 }
             }
         } catch (FileNotFoundException e) {
-            return books;
+            return books;// так нельзя, у тебя ошибка произошла, а ты ее маскируешь, возвращая то, что получилось
         } catch (IOException | ClassNotFoundException e) {
             throw new DAOException(e);
         }
@@ -124,7 +124,7 @@ public class BookDAOImpl implements BookDAO {
 
     private File getFile(String path, String filename) {
         File dir = new File(path);
-        if (!dir.isDirectory())
+        if (!dir.isDirectory())// java code convention обязателен всегда ,  {} пропали
             dir.mkdirs();
         return new File(dir, filename);
     }
