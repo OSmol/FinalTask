@@ -21,7 +21,7 @@ public class GetBooks implements Command {
         try {
             response = type + "&" + username + "&Books:\n" + bookService.getAllBooks();
         } catch (ServiceException e) {
-            response = type + "&" + username +"&Error while getting list of books: " + e.getMessage();
+            response = type + "&" + username +"&Error while getting list of books: " + e.getMessage();// исключения пишутся в лог, а не отправляются клиенту. Читай дорогой клиент - радуйся, знай, как там у нас все устроено
         }
         return response;
     }
